@@ -19,10 +19,14 @@ struct object
     std::map<std::string, std::variant<nlohmann::json, std::function<std::shared_ptr<object>()>, std::shared_ptr<object>>> type;
 };
 
+#define SERIALISE_FUNC() virtual void handle_serialise(object& o, bool ser)
+
 struct serialisable
 {
     virtual void handle_serialise(object& o, bool ser){}
 };
+
+#define SER(obj) serialise(o, obj, #obj, ser);
 
 ///ok so
 ///gameapi will be the object we interact with from c++
@@ -33,21 +37,37 @@ struct gameapi
 
 };
 
-template<typename T, typename = std::enable_if_t<!std::is_base_of_v<serialisable, T> && std::is_arithmetic_v<std::remove_reference_t<T>>>>
+template<typename T, typename = std::enable_if_t<!std::is_base_of_v<serialisable, T>>>
 inline
-void serialise(object& obj, const T& t, const std::string& key, bool ser)
+void serialise(object& obj, T& t, const std::string& key, bool ser)
 {
-    obj.type[key] = nlohmann::json(t);
+    if(ser)
+        obj.type[key] = nlohmann::json(t);
+    else
+    {
+        if(!std::holds_alternative<nlohmann::json>(obj.type[key]))
+            throw std::runtime_error("bad key type");
+
+        t = (T)std::get<nlohmann::json>(obj.type[key]);
+    }
 }
 
+template<typename T, typename = std::enable_if_t<std::is_base_of_v<serialisable, T>>>
 inline
 void serialise(object& obj, serialisable& v, const std::string& key, bool ser)
 {
-    object no;
+    if(ser)
+    {
+        object no;
 
-    v.handle_serialise(no, ser);
+        v.handle_serialise(no, ser);
 
-    obj.type[key] = std::make_shared<object>(no);
+        obj.type[key] = std::make_shared<object>(no);
+    }
+    else
+    {
+        v.handle_serialise(obj, ser);
+    }
 }
 
 #endif // GAMEAPI_H
