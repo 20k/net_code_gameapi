@@ -33,12 +33,12 @@ void for_each_recursive(object& o, const T& func)
 
         if(std::holds_alternative<std::function<std::shared_ptr<object>()>>(i.second))
         {
-            func(i.first, std::get<std::function<std::shared_ptr<object>()>>(i.second);
+            func(i.first, std::get<std::function<std::shared_ptr<object>()>>(i.second));
         }
 
         if(std::holds_alternative<std::shared_ptr<object>>(i.second))
         {
-            func(i.first, std::get<std::shared_ptr<object>>(i.second);
+            func(i.first, std::get<std::shared_ptr<object>>(i.second));
         }
     }
 }
