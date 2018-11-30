@@ -19,6 +19,30 @@ struct object
     std::map<std::string, std::variant<nlohmann::json, std::function<std::shared_ptr<object>()>, std::shared_ptr<object>>> type;
 };
 
+///so what we need is a method to iterate through an object, and be provided with the corresponding concrete type
+
+template<typename T>
+void for_each_recursive(object& o, const T& func)
+{
+    for(auto& i : o.type)
+    {
+        if(std::holds_alternative<nlohmann::json>(i.second))
+        {
+            func(i.first, std::get<nlohmann::json>(i.second));
+        }
+
+        if(std::holds_alternative<std::function<std::shared_ptr<object>()>>(i.second))
+        {
+            func(i.first, std::get<std::function<std::shared_ptr<object>()>>(i.second);
+        }
+
+        if(std::holds_alternative<std::shared_ptr<object>>(i.second))
+        {
+            func(i.first, std::get<std::shared_ptr<object>>(i.second);
+        }
+    }
+}
+
 #define SERIALISE_FUNC() virtual void handle_serialise(object& o, bool ser)
 
 struct serialisable
@@ -27,15 +51,6 @@ struct serialisable
 };
 
 #define SER(obj) serialise(o, obj, #obj, ser);
-
-///ok so
-///gameapi will be the object we interact with from c++
-///we want to be able to serialise objects to this easily, WHOLE objects as well
-///so the c++ friend injection hack might become viable here
-struct gameapi
-{
-
-};
 
 template<typename T, typename = std::enable_if_t<!std::is_base_of_v<serialisable, T>>>
 inline
