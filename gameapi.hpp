@@ -22,6 +22,7 @@ struct object
 ///so what we need is a method to iterate through an object, and be provided with the corresponding concrete type
 
 template<typename T>
+inline
 void for_each_recursive(object& o, const T& func)
 {
     for(auto& i : o.type)
@@ -39,6 +40,8 @@ void for_each_recursive(object& o, const T& func)
         if(std::holds_alternative<std::shared_ptr<object>>(i.second))
         {
             func(i.first, std::get<std::shared_ptr<object>>(i.second));
+
+            for_each_recursive(*std::get<std::shared_ptr<object>>(i.second), func);
         }
     }
 }
