@@ -70,7 +70,7 @@ void serialise(object& obj, T& t, const std::string& key, bool ser)
     }
 }
 
-template<typename T, typename = std::enable_if_t<std::is_base_of_v<serialisable, T>>>
+//template<typename T, typename = std::enable_if_t<std::is_base_of_v<serialisable, T>>>
 inline
 void serialise(object& obj, serialisable& v, const std::string& key, bool ser)
 {
