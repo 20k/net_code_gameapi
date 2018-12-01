@@ -63,8 +63,8 @@ void serialise(object& obj, T& t, const std::string& key, bool ser)
         obj.type[key] = nlohmann::json(t);
     else
     {
-        if(!std::holds_alternative<nlohmann::json>(obj.type[key]))
-            throw std::runtime_error("bad key type");
+        //if(!std::holds_alternative<nlohmann::json>(obj.type[key]))
+        //    throw std::runtime_error("bad key type");
 
         t = (T)std::get<nlohmann::json>(obj.type[key]);
     }
