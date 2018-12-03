@@ -3,7 +3,6 @@
 
 #include <map>
 #include <variant>
-#include "json.hpp"
 #include <memory>
 #include <functional>
 #include <vector>
@@ -16,7 +15,7 @@
 
 ///so what we need is a method to iterate through an object, and be provided with the corresponding concrete type
 
-template<typename T>
+/*template<typename T>
 inline
 void for_each_recursive(object& o, const T& func)
 {
