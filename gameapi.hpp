@@ -118,7 +118,7 @@ extern "C" void serialise_basic_u32(game_api_t gapi, uint32_t* u, const char* ke
 extern "C" void serialise_basic_u64(game_api_t gapi, uint64_t* u, const char* key, bool ser);
 extern "C" void serialise_basic_float(game_api_t gapi, float* u, const char* key, bool ser);
 extern "C" void serialise_basic_double(game_api_t gapi, double* u, const char* key, bool ser);
-extern "C" void serialise_basic_string(game_api_t gapi, const char* u, const char* key, bool ser);
+extern "C" void serialise_basic_string(game_api_t gapi, const char* u, uint32_t l, const char* key, bool ser);
 
 extern "C" void serialise_object_begin(game_api_t gapi, const char* key);
 extern "C" void serialise_object_end(game_api_t gapi, const char* key);
@@ -138,7 +138,7 @@ void to_gameapi(game_api_t gapi, serialisable& s, const std::string& key, bool s
 
 void to_gameapi(game_api_t gapi, std::string& str, const std::string& key, bool ser)
 {
-    serialise_basic_string(gapi, str.c_str(), key.c_str(), ser);
+    serialise_basic_string(gapi, str.c_str(), str.length(), key.c_str(), ser);
 }
 
 /*template<typename T, typename = std::enable_if_t<!std::is_base_of_v<serialisable, T>>>
