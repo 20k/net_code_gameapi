@@ -123,6 +123,9 @@ extern "C" void serialise_basic_string(game_api_t gapi, c_str* u, c_str* key, bo
 extern "C" void serialise_object_begin(game_api_t gapi, c_str* key);
 extern "C" void serialise_object_end(game_api_t gapi, c_str* key);
 
+extern "C" void serialise_object_begin_base(game_api_t gapi);
+extern "C" void serialise_object_end_base(game_api_t gapi);
+
 //template<typename T, typename = std::enable_if_t<std::is_base_of_v<serialisable, T>>>
 void to_gameapi(game_api_t gapi, serialisable& s, const std::string& key, bool ser)
 {
