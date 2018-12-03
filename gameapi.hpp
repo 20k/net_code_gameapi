@@ -144,7 +144,7 @@ void to_gameapi(game_api_t gapi, std::string& str, const std::string& key, bool 
 }
 
 template<typename T, typename = std::enable_if_t<!std::is_base_of_v<serialisable, T>>>
-void to_gameapi(game_api_t& gapi, T& s, const std::string& key, bool ser)
+void to_gameapi(game_api_t gapi, T& s, const std::string& key, bool ser)
 {
     c_str ckey(key);
 
