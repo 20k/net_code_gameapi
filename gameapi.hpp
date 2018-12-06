@@ -15,6 +15,8 @@
 
 ///so what we need is a method to iterate through an object, and be provided with the corresponding concrete type
 
+#define WASM_EXPORT __attribute__ ((visibility ("default"), used)) extern "C"
+
 /*template<typename T>
 inline
 void for_each_recursive(object& o, const T& func)
@@ -68,7 +70,8 @@ extern "C" void serialise_basic_u64(game_api_t gapi, uint64_t* u, const char* ke
 extern "C" void serialise_basic_float(game_api_t gapi, float* u, const char* key, bool ser);
 extern "C" void serialise_basic_double(game_api_t gapi, double* u, const char* key, bool ser);
 extern "C" void serialise_basic_string(game_api_t gapi, char* u, uint32_t l, const char* key, bool ser);
-extern "C" void serialise_basic_string_length(game_api_t gapi, uint32_t* len, const char* key_in);
+extern "C" void serialise_basic_string_length(game_api_t gapi, uint32_t* len, const char* key);
+extern "C" void serialise_basic_function(game_api_t gapi, uint32_t* address, const char* key, bool ser);
 
 extern "C" void serialise_object_begin(game_api_t gapi, const char* key, bool ser);
 extern "C" void serialise_object_end(game_api_t gapi, const char* key, bool ser);
@@ -143,9 +146,26 @@ void to_gameapi(game_api_t gapi, game_api_t (T::*ptr)(game_api_t), const std::st
 
 }
 
-void to_gameapi(game_api_t gapi, game_api_t (*ptr)(game_api_t), const std::string& key, bool ser)
-{
+using game_func = game_api_t (*)(game_api_t);
 
+extern
+game_api_t invoke_host_function(game_api_t args)
+
+void to_gameapi(game_api_t gapi, game_func& ptr, const std::string& key, bool ser)
+{
+    uint32_t address = (uint32_t)ptr;
+
+    serialise_basic_function(gapi, &address, key.c_str(), ser);
+
+    if(ser == false)
+    {
+        //ptr = (game_func)address;
+        ptr = invoke_host_function;
+    }
+    else
+    {
+
+    }
 }
 
 template<typename T>
@@ -156,6 +176,14 @@ void serialise_root(game_api_t gapi, T& t, bool ser)
     t.handle_serialise(gapi, ser);
 
     serialise_object_end_base(gapi, ser);
+}
+
+WASM_EXPORT
+game_api_t invoke_address(uint32_t address, game_api_t args)
+{
+    game_api_t (*ptr)(game_api_t) = (game_api_t (*)(game_api_t))address;
+
+    return ptr(args);
 }
 
 #endif // GAMEAPI_H
