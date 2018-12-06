@@ -138,6 +138,17 @@ void to_gameapi(game_api_t gapi, double& u, const std::string& key, bool ser)
 }
 
 template<typename T>
+void to_gameapi(game_api_t gapi, game_api_t (T::*ptr)(game_api_t), const std::string& key, bool ser)
+{
+
+}
+
+void to_gameapi(game_api_t gapi, game_api_t (*ptr)(game_api_t), const std::string& key, bool ser)
+{
+
+}
+
+template<typename T>
 void serialise_root(game_api_t gapi, T& t, bool ser)
 {
     serialise_object_begin_base(gapi, ser);
